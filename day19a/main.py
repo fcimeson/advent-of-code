@@ -321,21 +321,36 @@ if __name__ == "__main__":
     for scanner in scanners:
         scanner.build_graph()
 
-    # Solve   
-    environment = copy.deepcopy(scanners[0])
-    unoriented_scanners = copy.copy(scanners[1:])
-    while len(unoriented_scanners) > 0:
-        scanner = unoriented_scanners.pop(0)
-        isomorphism = find_subgraph_isomorphism(environment, scanner)
-        if isomorphism.size() >= 12:
-            orient_02_to_01(environment, scanner, isomorphism)
-            merge_02_into_01(environment, scanner)
+    # Solve
+    unoriented_scanners = []
+    number_of_scanners = len(scanners)
+    while len(scanners) + len(unoriented_scanners) > 1:
+        scanner01 = scanners.pop(0)
+        for i02, scanner02 in enumerate(scanners):
+            if scanner02.index == 0:
+                continue
+            isomorphism = find_subgraph_isomorphism(scanner01, scanner02)
             if args.debug:
                 print(isomorphism)
-        else:
-            unoriented_scanners.append(scanner)
+            if isomorphism.size() >= 10:
+                orient_02_to_01(scanner01, scanner02, isomorphism)
+                merge_02_into_01(scanner01, scanner02)
+                scanners.pop(i02)
+                if args.debug:
+                    print(f"Merged {scanner02.index} into {scanner01.index}")
+                break
+        unoriented_scanners.append(scanner01)
+        if len(scanners) == 0:
+            scanners.extend(unoriented_scanners)
+            unoriented_scanners = []
+            if len(scanners) == number_of_scanners:
+                break
+            number_of_scanners = len(scanners)
         if args.debug:
-            print(f"unoriented_scanners.size() = {len(unoriented_scanners)}, environment.size() = {environment.size()}")
+            print(f"len(scanners) = {len(scanners)}, len(unoriented) = {len(unoriented_scanners)}")
 
-    # Print
-    print(f"There are {environment.size()} beacons.")
+    # Count the number of beacons
+    number_of_beacons = 0
+    for scanner in scanners:
+        number_of_beacons += scanner.size()
+    print(f"There are {number_of_beacons} beacons and {len(scanners)} of disconnected environments.")
