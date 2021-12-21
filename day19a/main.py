@@ -180,7 +180,15 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
         new_maps = []
         while len(maps) > 0:
             map = maps.pop()
+            if map.get_map(i01) == i02 and map.get_map(j01) == j02:
+                new_maps.append(map)
+                continue
+            if map.get_map(i01) == j02 and map.get_map(j01) == i02:
+                new_maps.append(map)
+                continue
             if map.get_map(i01) is None or map.get_map(j01) is None:
+                mapped = False
+                
                 # i => i
                 new_map = copy.deepcopy(map)
                 if new_map.test_edge_addition(i01, i02):
@@ -188,12 +196,7 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
                     if new_map.test_edge_addition(j01, j02):
                         new_map.add(j01, j02)
                         new_maps.append(new_map)
-                    elif debug:
-                        print(f"Unable to add {i02} to:")
-                        print(new_map)
-                elif debug:
-                    print(f"Unable to add {i02} to:")
-                    print(new_map)
+                        mapped = True
 
                 # i => j
                 new_map = copy.deepcopy(map)
@@ -201,19 +204,14 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
                     new_map.add(i01, j02)
                     if new_map.test_edge_addition(j01, i02):
                         new_map.add(j01, i02)
-                        new_maps.append(new_map)
-                    elif debug:
-                        print(f"Unable to add {j02} to:")
-                        print(new_map)
-                elif debug:
-                    print(f"Unable to add {j02} to:")
-                    print(new_map)
-            elif map.get_map(i01) == i02 and map.get_map(j01) == j02:
-                new_maps.append(map)
-            elif map.get_map(i01) == j02 and map.get_map(j01) == i02:
-                new_maps.append(map)
-            else:
-                print(f"Error, could not find a match for edges {edge01} and {edge02}")
+                        mapped = True
+                
+                if not mapped:
+                    print(f"Error, could not find a match for edges {edge01} and {edge02}")
+                    assert False
+
+            print(f"Error, could not find a match for edges {edge01} and {edge02}")
+            assert False
         maps.extend(new_maps)
         
         # if debug:
