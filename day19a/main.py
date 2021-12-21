@@ -6,6 +6,7 @@ import sys
 import copy
 import math
 import numpy
+import pickle
 import argparse
 
 INF = float('inf')
@@ -18,11 +19,11 @@ def delta(point01, point02):
     return dx,dy,dz    
 
 def dist(point01, point02):
-    PRECISION = 5
+    # PRECISION = 10
     dx,dy,dz = delta(point01, point02)
-    d = math.sqrt(dx**2 + dy**2 + dz**2)
-    d = int(10**PRECISION * round(d, PRECISION))
-    return d
+    # d = math.sqrt(dx**2 + dy**2 + dz**2)
+    # d = int(10**PRECISION * round(d, PRECISION))
+    return dx**2 + dy**2 + dz**2
 
 class Edge:
     def __init__(self, i, j, weight):
@@ -45,8 +46,12 @@ class Scanner:
     
     def __str__(self):
         s = f"Scanner {self.index}\n"
-        for scan in self.scans:
-            s += f"  {scan}\n"
+        data = []
+        for i in range(len(self.scans)):
+            data.append([self.get_scan(i), i])
+        data = sorted(data, key = lambda x : list(x[0]) + [x[1]])
+        for scan, index in data:
+            s += f"  {scan}, index = {index}\n"
         return s
 
     def size(self):
@@ -60,6 +65,7 @@ class Scanner:
         scans = []
         for i in range(len(self.scans)):
             scans.append(self.get_scan(i))
+        scans = sorted(scans, key = lambda x: tuple(x))
         return scans
     
     def set_rotation(self, rotation_matrix):
@@ -67,12 +73,19 @@ class Scanner:
 
     def set_translation(self, translation):
         self.translation = translation
+
+    def reset_rotation(self):
+        self.rotation_matrix = numpy.identity(3, dtype=int)
+    
+    def reset_translation(self):
+        self.translation = numpy.zeros((3,1), dtype=int)
     
     def add_scan(self,x,y,z):
         self.scans.append(numpy.array([x,y,z], dtype=int))
     
     def build_graph(self, debug=False):
         N = len(self.scans)
+        self.scans = sorted(self.scans, key=lambda x: tuple(x))
         self.unique_edges_by_weight = []
         self.graph = numpy.zeros(shape=(N,N), dtype=int)
         for index01, point01 in enumerate(self.scans):
@@ -95,7 +108,7 @@ class SubGraphIsomorphism:
         self.map = {}
 
     def __str__(self):
-        s = f"Scanner {self.scanner01.index} => Scanner {self.scanner02.index}\n"
+        s = f"Scanner {self.scanner01.index} => Scanner {self.scanner02.index} (size = {self.size()})\n"
         for i01, i02 in self.map.items():
             s += f"  {i01} => {i02}\n"
         return s
@@ -143,6 +156,8 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
             edge02 = scanner02.unique_edges_by_weight[index02]
         if edge01.weight == edge02.weight:
             matched_edges.append((edge01, edge02))
+            if scanner01.index == 1 and scanner02.index == 9 and edge01.weight == 1613013:
+                print(160, edge01, edge02)
 
     maps = []
     for edge01, edge02 in matched_edges:
@@ -219,6 +234,8 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
 def orient_02_to_01(scanner01, scanner02, isomorphisim):
     assert scanner01.index == isomorphisim.scanner01.index
     assert scanner02.index == isomorphisim.scanner02.index
+    scanner01.reset_rotation()
+    scanner01.reset_translation()
 
     # Find rotation
     x_rotated = y_rotated = z_rotated = False
@@ -303,6 +320,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Advent of Code')
     parser.add_argument('input', help='input file')
     parser.add_argument('--days', type=int, default=80, help='length of simulation')
+    parser.add_argument('--pickle', choices=['load', 'save', None], default=None, help='Pickle RICK!!!')
     parser.add_argument('-d', '--debug', action='store_true', help='enable debug code')
     args = parser.parse_args()
 
@@ -318,6 +336,9 @@ if __name__ == "__main__":
             elif re.match(r'^%s,%s,%s$' % (RE_NUMBER,RE_NUMBER,RE_NUMBER), line):
                 coordinates = [int(x) for x in re.findall(RE_NUMBER, line)]
                 scanner.add_scan(coordinates[0], coordinates[1], coordinates[2])
+            elif not re.match(r'^\s*$', line):
+                print("ERROR", line)
+                sys.exit()
     for scanner in scanners:
         scanner.build_graph()
 
@@ -329,16 +350,53 @@ if __name__ == "__main__":
         for i02, scanner02 in enumerate(scanners):
             if scanner02.index == 0:
                 continue
-            isomorphism = find_subgraph_isomorphism(scanner01, scanner02)
+            # Debug (load problem instance)
+            if args.pickle == 'load':
+                with open('scanner01.pickle', 'rb') as f:
+                    scanner01 = pickle.load(f)
+                with open('scanner09.pickle', 'rb') as f:
+                    scanner02 = pickle.load(f)
+            isomorphism = find_subgraph_isomorphism(scanner01, scanner02, args.debug)
             if args.debug:
                 print(isomorphism)
-            if isomorphism.size() >= 10:
+            if isomorphism.size() >= 12:
+
+                # Debug (save problem instance)
+                if args.pickle == 'save' and scanner01.index == 1 and scanner02.index == 9:
+                    with open('scanner01.pickle', 'wb') as f:
+                        pickle.dump(scanner01, f)
+                    with open('scanner09.pickle', 'wb') as f:
+                        pickle.dump(scanner02, f)
+
+                # Debug
+                # if args.debug and scanner01.index == 1 and scanner02.index == 9:
+                #     print(scanner01)
+                #     print(scanner02)
+                #     print("Scanner01 Edges")
+                #     for edge in scanner01.unique_edges_by_weight:
+                #         print("  ", edge)
+                #     print("Scanner02 Edges")
+                #     for edge in scanner02.unique_edges_by_weight:
+                #         print("  ", edge)
+                #     sys.exit()
+                
                 orient_02_to_01(scanner01, scanner02, isomorphism)
+                expected_size = scanner01.size() + scanner02.size() - isomorphism.size()
                 merge_02_into_01(scanner01, scanner02)
                 scanners.pop(i02)
+
+                # Debug
+                if scanner01.size() != expected_size:
+                    print(f"scanner01.size() = {scanner01.size()}, expected = {expected_size}")
+                    print(isomorphism)
+                    print(scanner01)
+                    print(scanner02)
+                assert scanner01.size() == expected_size
+
                 if args.debug:
                     print(f"Merged {scanner02.index} into {scanner01.index}")
                 break
+
         unoriented_scanners.append(scanner01)
         if len(scanners) == 0:
             scanners.extend(unoriented_scanners)
@@ -353,4 +411,15 @@ if __name__ == "__main__":
     number_of_beacons = 0
     for scanner in scanners:
         number_of_beacons += scanner.size()
-    print(f"There are {number_of_beacons} beacons and {len(scanners)} of disconnected environments.")
+    print(f"There are {number_of_beacons} beacons and {len(scanners)} disconnected environments.")
+
+# Bug (the following coordinates are not matched)
+    # Scanner 1
+    # [-894 -241 1720], index = 45
+    # [-840 -340 1746], index = 50
+    # [-795 -232 1790], index = 56
+
+    # Scanner 9
+    # [-894 -241 1720], index = 66
+    # [-840 -340 1746], index = 63
+    # [-795 -232 1790], index = 60
