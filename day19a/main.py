@@ -166,28 +166,22 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
         i02 = edge02.i
         j02 = edge02.j
         
-        if len(maps) == 0:
-            new_map = SubGraphIsomorphism(scanner01, scanner02)
-            new_map.add(i01,i02)
-            new_map.add(j01,j02)
-            maps.append(new_map)
-            new_map = SubGraphIsomorphism(scanner01, scanner02)
-            new_map.add(i01,j02)
-            new_map.add(j01,i02)
-            maps.append(new_map)
-            continue
-        
+        mapped = False
         new_maps = []
         while len(maps) > 0:
             map = maps.pop()
+            
             if map.get_map(i01) == i02 and map.get_map(j01) == j02:
                 new_maps.append(map)
+                mapped = True
                 continue
+            
             if map.get_map(i01) == j02 and map.get_map(j01) == i02:
                 new_maps.append(map)
+                mapped = True
                 continue
+            
             if map.get_map(i01) is None or map.get_map(j01) is None:
-                mapped = False
                 
                 # i => i
                 new_map = copy.deepcopy(map)
@@ -206,12 +200,18 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
                         new_map.add(j01, i02)
                         mapped = True
                 
-                if not mapped:
-                    print(f"Error, could not find a match for edges {edge01} and {edge02}")
-                    assert False
+            if mapped: continue
+            new_maps.append(map)
 
-            print(f"Error, could not find a match for edges {edge01} and {edge02}")
-            assert False
+        if not mapped:
+            new_map = SubGraphIsomorphism(scanner01, scanner02)
+            new_map.add(i01,i02)
+            new_map.add(j01,j02)
+            maps.append(new_map)
+            new_map = SubGraphIsomorphism(scanner01, scanner02)
+            new_map.add(i01,j02)
+            new_map.add(j01,i02)
+            new_maps.append(new_map)
         maps.extend(new_maps)
         
         # if debug:
