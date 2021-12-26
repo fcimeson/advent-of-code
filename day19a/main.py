@@ -18,11 +18,12 @@ def delta(point01, point02):
     dz = point02[2] - point01[2]
     return dx,dy,dz    
 
-def dist(point01, point02):
-    # PRECISION = 10
+def manhatan_distance(point01, point02):
     dx,dy,dz = delta(point01, point02)
-    # d = math.sqrt(dx**2 + dy**2 + dz**2)
-    # d = int(10**PRECISION * round(d, PRECISION))
+    return abs(dx) + abs(dy) + abs(dz)
+
+def squared_distance(point01, point02):
+    dx,dy,dz = delta(point01, point02)
     return dx**2 + dy**2 + dz**2
 
 class Edge:
@@ -56,6 +57,9 @@ class Scanner:
 
     def size(self):
         return len(self.scans)
+    
+    def get_origin(self):
+        return self.translation
     
     def get_scan(self, index):
         x = self.rotation_matrix.dot(self.scans[index].T).T + self.translation.T
@@ -91,7 +95,7 @@ class Scanner:
         for index01, point01 in enumerate(self.scans):
             for index02 in range(index01,N):
                 point02 = self.scans[index02]
-                d = dist(point01, point02)
+                d = squared_distance(point01, point02)
                 self.graph[index01,index02] = d
                 self.graph[index02,index01] = d
                 if d > 0:
@@ -331,38 +335,32 @@ if __name__ == "__main__":
     for scanner in scanners:
         scanner.build_graph()
 
-    # Solve
-    unoriented_scanners = []
-    number_of_scanners = len(scanners)
-    while len(scanners) + len(unoriented_scanners) > 1:
-        scanner01 = scanners.pop(0)
-        for i02, scanner02 in enumerate(scanners):
-            if scanner02.index == 0:
-                continue
-            isomorphism = find_subgraph_isomorphism(scanner01, scanner02, args.debug)
-            if isomorphism.size() >= 12:
-                expected_size = scanner01.size() + scanner02.size() - isomorphism.size()
-                orient_02_to_01(scanner01, scanner02, isomorphism)
-                merge_02_into_01(scanner01, scanner02)
-                assert scanner01.size() == expected_size
-                if args.debug:
-                    print(f"Merged {scanner02.index} into {scanner01.index}")
-                    print(isomorphism)
-                scanners.pop(i02)
-                break
-
-        unoriented_scanners.append(scanner01)
-        if len(scanners) == 0:
-            scanners.extend(unoriented_scanners)
-            unoriented_scanners = []
-            if len(scanners) == number_of_scanners:
-                break
-            number_of_scanners = len(scanners)
+    # Orient scanners
+    scanner00 = copy.deepcopy(scanners[0])
+    unoriented_scanners = copy.copy(scanners[1:])
+    while len(unoriented_scanners) > 0:
+        scanner01 = unoriented_scanners.pop(0)
+        isomorphism = find_subgraph_isomorphism(scanner00, scanner01, args.debug)
+        if isomorphism.size() >= 12:
+            expected_size = scanner00.size() + scanner01.size() - isomorphism.size()
+            orient_02_to_01(scanner00, scanner01, isomorphism)
+            merge_02_into_01(scanner00, scanner01)
+            assert scanner00.size() == expected_size
+            print(f"Merged {scanner01.index} into {scanner00.index}, len(unoriented_scanners) = {len(unoriented_scanners)}.")
+        else:
+            unoriented_scanners.append(scanner01)
         if args.debug:
-            print(f"len(scanners) = {len(scanners)}, len(unoriented) = {len(unoriented_scanners)}")
+            print(f"scanner01.index = {scanner01.index}")
+    print(f"There are {scanner00.size()} beacons.")
 
-    # Count the number of beacons
-    number_of_beacons = 0
-    for scanner in scanners:
-        number_of_beacons += scanner.size()
-    print(f"There are {number_of_beacons} beacons and {len(scanners)} disconnected environments.")
+    # Find largest distance between scanners
+    max_distance = 0
+    for i01, scanner01 in enumerate(scanners):
+        for i02, scanner02 in enumerate(scanners):
+            if i01 == i02: continue
+            d = manhatan_distance(scanner01.get_origin(), scanner02.get_origin())
+            if d > max_distance:
+                max_distance = d
+                if args.debug:
+                    print(f"Found new max distance of {d} between scanner {scanner01.index} and scanner {scanner02.index}.")
+    print(f"The largest distance between scanners is {max_distance}.")
