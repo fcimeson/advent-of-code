@@ -158,6 +158,8 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
             matched_edges.append((edge01, edge02))
             if scanner01.index == 1 and scanner02.index == 9 and edge01.weight == 1613013:
                 print(160, edge01, edge02)
+    if debug:
+        print(f"find_subgraph_isomorphism: matched {len(matched_edges)} out of {(scanner01.size()**2-scanner01.size())//2} edges.")
 
     maps = []
     for edge01, edge02 in matched_edges:
@@ -166,19 +168,24 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
         i02 = edge02.i
         j02 = edge02.j
         
-        mapped = False
         new_maps = []
+        mapped = False
+        if debug: print(170, len(maps), len(new_maps))        
         while len(maps) > 0:
             map = maps.pop()
             
             if map.get_map(i01) == i02 and map.get_map(j01) == j02:
                 new_maps.append(map)
                 mapped = True
+                if debug:
+                    print(f"find_subgraph_isomorphism: {i01} and {j01} are already mapped to {j01} and {j02}.")
                 continue
             
             if map.get_map(i01) == j02 and map.get_map(j01) == i02:
                 new_maps.append(map)
                 mapped = True
+                if debug:
+                    print(f"find_subgraph_isomorphism: {i01} and {j01} are already mapped to {j02} and {i02}.")
                 continue
             
             if map.get_map(i01) is None or map.get_map(j01) is None:
@@ -191,6 +198,14 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
                         new_map.add(j01, j02)
                         new_maps.append(new_map)
                         mapped = True
+                        if debug:
+                            print(f"find_subgraph_isomorphism: mapped {i01} to {i02} and {j01} to {j02}.")
+                            print(200, len(maps), len(new_maps))        
+                    elif debug:
+                        print(f"find_subgraph_isomorphism: cannot map {j01} to {j02}.")
+                elif debug:
+                    print(f"find_subgraph_isomorphism: cannot map {i01} to {i02}.")
+
 
                 # i => j
                 new_map = copy.deepcopy(map)
@@ -198,7 +213,17 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
                     new_map.add(i01, j02)
                     if new_map.test_edge_addition(j01, i02):
                         new_map.add(j01, i02)
+                        new_maps.append(new_map)
                         mapped = True
+                        if debug:
+                            print(f"220 find_subgraph_isomorphism: mapped {i01} to {j02} and {j01} to {i02}.")
+                            print(220, len(maps), len(new_maps))        
+                    elif debug:
+                        print(f"find_subgraph_isomorphism: cannot map {j01} to {i02}.")
+                elif debug:
+                    print(f"find_subgraph_isomorphism: cannot map {i01} to {j02}.")
+            else:
+                print(f"find_subgraph_isomorphism: {i01} is mapped to {map.get_map(i01)} and {j01} is mapped to {map.get_map(j01)}.")
                 
             if mapped: continue
             new_maps.append(map)
@@ -212,13 +237,15 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
             new_map.add(i01,j02)
             new_map.add(j01,i02)
             new_maps.append(new_map)
+        if debug: print(230, len(maps), len(new_maps))        
         maps.extend(new_maps)
+        if debug: print(240, len(maps), len(new_maps))        
         
-        # if debug:
-        #     print(f"Found maps for edges {edge01} and {edge02}")
-        #     for map in maps:
-        #         print(map)
-        #     input("Press any key")
+        if debug:
+            print(f"Found maps for edges {edge01} and {edge02}")
+            for map in maps:
+                print(map)
+            input("Press any key")
     
     # Find the map with the most matches
     if len(maps) > 0:
@@ -378,10 +405,31 @@ if __name__ == "__main__":
                 #         print("  ", edge)
                 #     sys.exit()
                 
+                # Debug
+                scanner01_copy = copy.deepcopy(scanner01)
+                scanner02_copy = copy.deepcopy(scanner02)
+                print(380, isomorphism.size(), scanner01.size(), scanner02.size())
+                isomorphism_copy  = find_subgraph_isomorphism(scanner02_copy, scanner01_copy, args.debug)
+                orient_02_to_01(scanner02_copy, scanner01_copy, isomorphism_copy)
+                merge_02_into_01(scanner02_copy, scanner01_copy)
+                
                 orient_02_to_01(scanner01, scanner02, isomorphism)
                 expected_size = scanner01.size() + scanner02.size() - isomorphism.size()
                 merge_02_into_01(scanner01, scanner02)
                 scanners.pop(i02)
+                
+                # Debug
+                isomorphism  = find_subgraph_isomorphism(scanner01, scanner02_copy, debug=False)
+                if isomorphism.size() != scanner01.size():
+                    print(400, isomorphism.size(), scanner01.size(), scanner02_copy.size())
+                    # print("scanner01")
+                    # for edge in scanner01.unique_edges_by_weight:
+                    #     print(edge)
+                    # print("scanner02")
+                    # for edge in scanner02_copy.unique_edges_by_weight:
+                    #     print(edge)
+                assert isomorphism.size() == scanner01.size()
+                
 
                 # Debug
                 if scanner01.size() != expected_size:
