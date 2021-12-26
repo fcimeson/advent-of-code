@@ -156,10 +156,6 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
             edge02 = scanner02.unique_edges_by_weight[index02]
         if edge01.weight == edge02.weight:
             matched_edges.append((edge01, edge02))
-            if scanner01.index == 1 and scanner02.index == 9 and edge01.weight == 1613013:
-                print(160, edge01, edge02)
-    if debug:
-        print(f"find_subgraph_isomorphism: matched {len(matched_edges)} out of {(scanner01.size()**2-scanner01.size())//2} edges.")
 
     maps = []
     for edge01, edge02 in matched_edges:
@@ -170,23 +166,16 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
         
         new_maps = []
         mapped = False
-        if debug: print(170, len(maps), len(new_maps))        
         while len(maps) > 0:
             map = maps.pop()
             
             if map.get_map(i01) == i02 and map.get_map(j01) == j02:
                 new_maps.append(map)
                 mapped = True
-                if debug:
-                    print(f"find_subgraph_isomorphism: {i01} and {j01} are already mapped to {j01} and {j02}.")
-                continue
             
             if map.get_map(i01) == j02 and map.get_map(j01) == i02:
                 new_maps.append(map)
                 mapped = True
-                if debug:
-                    print(f"find_subgraph_isomorphism: {i01} and {j01} are already mapped to {j02} and {i02}.")
-                continue
             
             if map.get_map(i01) is None or map.get_map(j01) is None:
                 
@@ -198,14 +187,6 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
                         new_map.add(j01, j02)
                         new_maps.append(new_map)
                         mapped = True
-                        if debug:
-                            print(f"find_subgraph_isomorphism: mapped {i01} to {i02} and {j01} to {j02}.")
-                            print(200, len(maps), len(new_maps))        
-                    elif debug:
-                        print(f"find_subgraph_isomorphism: cannot map {j01} to {j02}.")
-                elif debug:
-                    print(f"find_subgraph_isomorphism: cannot map {i01} to {i02}.")
-
 
                 # i => j
                 new_map = copy.deepcopy(map)
@@ -215,15 +196,6 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
                         new_map.add(j01, i02)
                         new_maps.append(new_map)
                         mapped = True
-                        if debug:
-                            print(f"220 find_subgraph_isomorphism: mapped {i01} to {j02} and {j01} to {i02}.")
-                            print(220, len(maps), len(new_maps))        
-                    elif debug:
-                        print(f"find_subgraph_isomorphism: cannot map {j01} to {i02}.")
-                elif debug:
-                    print(f"find_subgraph_isomorphism: cannot map {i01} to {j02}.")
-            else:
-                print(f"find_subgraph_isomorphism: {i01} is mapped to {map.get_map(i01)} and {j01} is mapped to {map.get_map(j01)}.")
                 
             if mapped: continue
             new_maps.append(map)
@@ -237,16 +209,8 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
             new_map.add(i01,j02)
             new_map.add(j01,i02)
             new_maps.append(new_map)
-        if debug: print(230, len(maps), len(new_maps))        
         maps.extend(new_maps)
-        if debug: print(240, len(maps), len(new_maps))        
-        
-        if debug:
-            print(f"Found maps for edges {edge01} and {edge02}")
-            for map in maps:
-                print(map)
-            input("Press any key")
-    
+            
     # Find the map with the most matches
     if len(maps) > 0:
         largest_map = maps[0]
@@ -340,7 +304,7 @@ def merge_02_into_01(scanner01, scanner02):
 
 
 if __name__ == "__main__":
-    
+
     # Args
     parser = argparse.ArgumentParser(description='Advent of Code')
     parser.add_argument('input', help='input file')
@@ -375,72 +339,16 @@ if __name__ == "__main__":
         for i02, scanner02 in enumerate(scanners):
             if scanner02.index == 0:
                 continue
-            # Debug (load problem instance)
-            if args.pickle == 'load':
-                with open('scanner01.pickle', 'rb') as f:
-                    scanner01 = pickle.load(f)
-                with open('scanner09.pickle', 'rb') as f:
-                    scanner02 = pickle.load(f)
             isomorphism = find_subgraph_isomorphism(scanner01, scanner02, args.debug)
-            if args.debug:
-                print(isomorphism)
             if isomorphism.size() >= 12:
-
-                # Debug (save problem instance)
-                if args.pickle == 'save' and scanner01.index == 1 and scanner02.index == 9:
-                    with open('scanner01.pickle', 'wb') as f:
-                        pickle.dump(scanner01, f)
-                    with open('scanner09.pickle', 'wb') as f:
-                        pickle.dump(scanner02, f)
-
-                # Debug
-                # if args.debug and scanner01.index == 1 and scanner02.index == 9:
-                #     print(scanner01)
-                #     print(scanner02)
-                #     print("Scanner01 Edges")
-                #     for edge in scanner01.unique_edges_by_weight:
-                #         print("  ", edge)
-                #     print("Scanner02 Edges")
-                #     for edge in scanner02.unique_edges_by_weight:
-                #         print("  ", edge)
-                #     sys.exit()
-                
-                # Debug
-                scanner01_copy = copy.deepcopy(scanner01)
-                scanner02_copy = copy.deepcopy(scanner02)
-                print(380, isomorphism.size(), scanner01.size(), scanner02.size())
-                isomorphism_copy  = find_subgraph_isomorphism(scanner02_copy, scanner01_copy, args.debug)
-                orient_02_to_01(scanner02_copy, scanner01_copy, isomorphism_copy)
-                merge_02_into_01(scanner02_copy, scanner01_copy)
-                
-                orient_02_to_01(scanner01, scanner02, isomorphism)
                 expected_size = scanner01.size() + scanner02.size() - isomorphism.size()
+                orient_02_to_01(scanner01, scanner02, isomorphism)
                 merge_02_into_01(scanner01, scanner02)
-                scanners.pop(i02)
-                
-                # Debug
-                isomorphism  = find_subgraph_isomorphism(scanner01, scanner02_copy, debug=False)
-                if isomorphism.size() != scanner01.size():
-                    print(400, isomorphism.size(), scanner01.size(), scanner02_copy.size())
-                    # print("scanner01")
-                    # for edge in scanner01.unique_edges_by_weight:
-                    #     print(edge)
-                    # print("scanner02")
-                    # for edge in scanner02_copy.unique_edges_by_weight:
-                    #     print(edge)
-                assert isomorphism.size() == scanner01.size()
-                
-
-                # Debug
-                if scanner01.size() != expected_size:
-                    print(f"scanner01.size() = {scanner01.size()}, expected = {expected_size}")
-                    print(isomorphism)
-                    print(scanner01)
-                    print(scanner02)
                 assert scanner01.size() == expected_size
-
                 if args.debug:
                     print(f"Merged {scanner02.index} into {scanner01.index}")
+                    print(isomorphism)
+                scanners.pop(i02)
                 break
 
         unoriented_scanners.append(scanner01)
@@ -458,14 +366,3 @@ if __name__ == "__main__":
     for scanner in scanners:
         number_of_beacons += scanner.size()
     print(f"There are {number_of_beacons} beacons and {len(scanners)} disconnected environments.")
-
-# Bug (the following coordinates are not matched)
-    # Scanner 1
-    # [-894 -241 1720], index = 45
-    # [-840 -340 1746], index = 50
-    # [-795 -232 1790], index = 56
-
-    # Scanner 9
-    # [-894 -241 1720], index = 66
-    # [-840 -340 1746], index = 63
-    # [-795 -232 1790], index = 60
