@@ -5,11 +5,12 @@ import sys
 import copy
 import argparse
 
-INF = float('inf')
+INF = float("inf")
+
 
 class CustomList(list):
     def __str__(self):
-        s = ''
+        s = ""
         it = super().__iter__()
         while True:
             try:
@@ -19,53 +20,58 @@ class CustomList(list):
                 break
         return s
 
+
 if __name__ == "__main__":
-    
+
     # Args
-    parser = argparse.ArgumentParser(description='Advent of Code')
-    parser.add_argument('input', help='input file')
-    parser.add_argument('--days', type=int, default=80, help='length of simulation')
-    parser.add_argument('-d', '--debug', action='store_true', help='enable debug code')
+    parser = argparse.ArgumentParser(description="Advent of Code")
+    parser.add_argument("input", help="input file")
+    parser.add_argument("--days", type=int, default=80, help="length of simulation")
+    parser.add_argument("-d", "--debug", action="store_true", help="enable debug code")
     args = parser.parse_args()
 
     # Data
     total = 0
     scores = []
-    score_map = {')':1, ']':2, '}':3, '>':4}
-    autocompletes = {')':0, ']':0, '}':0, '>':0}
-    end_bracket_map = {'(':')', '[':']', '{':'}', '<':'>'}
-    with open(args.input, 'r') as f:
+    score_map = {")": 1, "]": 2, "}": 3, ">": 4}
+    autocompletes = {")": 0, "]": 0, "}": 0, ">": 0}
+    end_bracket_map = {"(": ")", "[": "]", "{": "}", "<": ">"}
+    with open(args.input, "r") as f:
         for line in f.readlines():
             score = 0
             line = line.strip()
-            if re.match(r'^[\(\[{<\)\]}>]+$', line):
+            if re.match(r"^[\(\[{<\)\]}>]+$", line):
                 stack = []
                 corrupted = False
                 for char in list(line):
-                    if char in '([{<':
+                    if char in "([{<":
                         stack.append(char)
                         continue
-                                        
+
                     expected = end_bracket_map[stack[-1]]
                     if char == expected:
                         stack.pop()
                     else:
                         corrupted = True
                         break
-                missing = ''
+                missing = ""
                 while not corrupted and len(stack) > 0:
                     char = stack.pop()
-                    assert char in '([{<'
+                    assert char in "([{<"
                     bracket = end_bracket_map[char]
                     missing += bracket
                     autocompletes[bracket] += 1
-                    score = score*5 + score_map[bracket]
+                    score = score * 5 + score_map[bracket]
                 if len(missing) > 0:
                     if args.debug:
-                        print(f"{line} - Completed by adding {missing}, score = {score}.")
+                        print(
+                            f"{line} - Completed by adding {missing}, score = {score}."
+                        )
                     scores.append(score)
                     total += score
-    
+
     # Calculate
     scores = sorted(scores)
-    print(f"Total syntax score is {total} and the middle score is {scores[len(scores)//2]}.")
+    print(
+        f"Total syntax score is {total} and the middle score is {scores[len(scores)//2]}."
+    )
