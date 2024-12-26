@@ -9,13 +9,6 @@ INF = float("inf")
 RE_DIGIT = r"[abcdefg]{1,7}"
 
 
-class CustomList00(list):
-    def __init__(self, size):
-        super().__init__([0] * size)
-
-    def __str__(self):
-        return super().__str__().strip("[").rstrip("]")
-
 class CustomList(list):
     def __str__(self):
         s = ""
@@ -56,7 +49,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--debug", action="store_true", help="enable debug code")
     args = parser.parse_args()
 
-    # Part 1
+    # Data
     data = []
     input_rx = r"^(\s*%s\s{1,}){10}\|(\s{1,}%s\s*){4}$" % (RE_DIGIT, RE_DIGIT)
     with open(args.input, "r") as f:
@@ -65,14 +58,19 @@ if __name__ == "__main__":
                 s = line.split("|")
                 data.append(
                     {
-                        "signals": re.findall(RE_DIGIT, s[0]),
-                        "output": re.findall(RE_DIGIT, s[1]),
+                        "signals": CustomList(
+                            [CharSet(s) for s in re.findall(RE_DIGIT, s[0])]
+                        ),
+                        "output": CustomList(
+                            [CharSet(s) for s in re.findall(RE_DIGIT, s[1])]
+                        ),
                     }
                 )
             else:
                 raise ValueError(f"Incorrectly formated input: {line}")
 
-    number_of_digits = CustomList00(10)
+    # Part 1
+    number_of_digits = CustomList([0] * 10)
     for x in data:
         s = ""
         for digit in x["output"]:
@@ -94,25 +92,6 @@ if __name__ == "__main__":
     )
 
     # Part 2
-    data = []
-    input_rx = r"^(\s*%s\s{1,}){10}\|(\s{1,}%s\s*){4}$" % (RE_DIGIT, RE_DIGIT)
-    with open(args.input, "r") as f:
-        for line in f.readlines():
-            if re.match(input_rx, line):
-                s = line.split("|")
-                data.append(
-                    {
-                        "signals": CustomList(
-                            [CharSet(s) for s in re.findall(RE_DIGIT, s[0])]
-                        ),
-                        "output": CustomList(
-                            [CharSet(s) for s in re.findall(RE_DIGIT, s[1])]
-                        ),
-                    }
-                )
-            else:
-                raise ValueError(f"Incorrectly formated input: {line}")
-
     total = 0
     for x in data:
         signal_to_digit = {}

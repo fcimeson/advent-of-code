@@ -35,39 +35,37 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--debug", action="store_true", help="enable debug code")
     args = parser.parse_args()
 
-    # Part 1
+    # Get input data
+    data00 = []
     with open(args.input, "r") as f:
-        ones = []
-        number_of_lines = 0
-        for line in f.readlines():
-            if re.match(r"^\s*[01]+\s*$", line):
-                for i, x in enumerate(re.findall(r"[01]", line)):
-                    while i >= len(ones):
-                        ones.append(0)
-                    if x == "1":
-                        ones[i] += 1
-                number_of_lines += 1
-        gamma = epsilon = ""
-        for i, count in enumerate(ones):
-            if count >= number_of_lines // 2:
-                gamma += "1"
-                epsilon += "0"
-            else:
-                gamma += "0"
-                epsilon += "1"
-        gamma = int(gamma, 2)
-        epsilon = int(epsilon, 2)
-        print(f"Part 1: gamma = {gamma}, Epsilon = {epsilon}, Power = {gamma*epsilon}")
-
-    # Part 2
-    with open(args.input, "r") as f:
-        # Get input data
-        data00 = []
         for line in f.readlines():
             if re.match(r"^\s*[01]+\s*$", line):
                 data00.append(line.strip())
 
-    # Oxygen
+    # Part 1
+    ones = []
+    number_of_lines = 0
+    for line in data00:
+        if re.match(r"^\s*[01]+\s*$", line):
+            for i, x in enumerate(re.findall(r"[01]", line)):
+                while i >= len(ones):
+                    ones.append(0)
+                if x == "1":
+                    ones[i] += 1
+            number_of_lines += 1
+    gamma = epsilon = ""
+    for i, count in enumerate(ones):
+        if count >= number_of_lines // 2:
+            gamma += "1"
+            epsilon += "0"
+        else:
+            gamma += "0"
+            epsilon += "1"
+    gamma = int(gamma, 2)
+    epsilon = int(epsilon, 2)
+    print(f"Part 1: gamma = {gamma}, Epsilon = {epsilon}, Power = {gamma*epsilon}")
+
+    # Part 2
     index = 0
     data01 = copy.copy(data00)
     while len(data01) > 1:
@@ -75,7 +73,6 @@ if __name__ == "__main__":
         index += 1
     oxygen = int(data01[0], 2)
 
-    # CO2
     index = 0
     data02 = copy.copy(data00)
     while len(data02) > 1:

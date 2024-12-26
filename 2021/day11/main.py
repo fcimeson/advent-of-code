@@ -58,17 +58,20 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--debug", action="store_true", help="enable debug code")
     args = parser.parse_args()
 
-    # Part 1
+    # Environment
     N = 10
-    environment = []
+    environment00 = []
     with open(args.input, "r") as f:
         for line in f.readlines():
             if re.match(r"^\d+$", line):
-                environment.append(
+                environment00.append(
                     CustomList([int(x) for x in re.findall(r"\d", line)])
                 )
-                assert len(environment[-1]) == N
-        assert len(environment) == N
+                assert len(environment00[-1]) == N
+        assert len(environment00) == N
+
+    # Part 1
+    environment = copy.deepcopy(environment00)
 
     number_of_flashes = 0
     for step in range(1, 101):
@@ -99,16 +102,7 @@ if __name__ == "__main__":
     print(f"Part 1: total number of flashes is {number_of_flashes}.")
 
     # Part 2
-    N = 10
-    environment = []
-    with open(args.input, "r") as f:
-        for line in f.readlines():
-            if re.match(r"^\d+$", line):
-                environment.append(
-                    CustomList([int(x) for x in re.findall(r"\d", line)])
-                )
-                assert len(environment[-1]) == N
-        assert len(environment) == N
+    environment = copy.deepcopy(environment00)
 
     step = 1
     while True:
@@ -142,4 +136,3 @@ if __name__ == "__main__":
 
     # Output
     print(f"Part 2: the octopi syncronize after step {step}.")
-

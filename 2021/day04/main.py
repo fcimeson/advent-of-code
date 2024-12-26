@@ -47,9 +47,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Data
+    game_boards = []
+    numbers_to_call = []
     with open(args.input, "r") as f:
-        numbers_to_call = []
-        games = []
         state = "parse_numbers_to_call"
         for line in f.readlines():
             if state == "parse_numbers_to_call":
@@ -58,15 +58,17 @@ if __name__ == "__main__":
                     state = "parse_board"
             elif state == "parse_board":
                 if re.match(r"^\s*$", line):
-                    games.append({"board": [], "row_count": [], "col_count": []})
+                    game_boards.append([])
                 elif re.match(r"^[\d\s]+$", line):
-                    games[-1]["board"].append(
-                        [int(x) for x in re.findall(r"\d+", line)]
-                    )
+                    game_boards[-1].append([int(x) for x in re.findall(r"\d+", line)])
 
     # Part 1
     winner = False
     called_numbers = []
+    games = [
+        {"board": game_board, "row_count": [], "col_count": []}
+        for game_board in game_boards
+    ]
     for called_number in numbers_to_call:
         called_numbers.append(called_number)
         for i, game in enumerate(games):
@@ -80,27 +82,13 @@ if __name__ == "__main__":
         if winner:
             break
 
-    # Data
-    with open(args.input, "r") as f:
-        numbers_to_call = []
-        games = []
-        state = "parse_numbers_to_call"
-        for line in f.readlines():
-            if state == "parse_numbers_to_call":
-                if re.match(r"^\s*[\d,\s]+\s*$", line):
-                    numbers_to_call = [int(x) for x in re.findall(r"\d+", line)]
-                    state = "parse_board"
-            elif state == "parse_board":
-                if re.match(r"^\s*$", line):
-                    games.append({"board": [], "row_count": [], "col_count": []})
-                elif re.match(r"^[\d\s]+$", line):
-                    games[-1]["board"].append(
-                        [int(x) for x in re.findall(r"\d+", line)]
-                    )
-
     # Part 2
     winners = []
     called_numbers = []
+    games = [
+        {"board": game_board, "row_count": [], "col_count": []}
+        for game_board in game_boards
+    ]
     while len(games) > 0:
         called_number = numbers_to_call.pop(0)
         called_numbers.append(called_number)
