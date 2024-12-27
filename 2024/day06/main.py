@@ -48,12 +48,86 @@ def find_starting_point(map):
                 return i, j
 
 
+def print_map(map):
+    for i, row in enumerate(map):
+        s = ""
+        for j, c in enumerate(row):
+            s += c
+        print(s)
+
+
 def print_visited(map, visited):
     for i, row in enumerate(map):
         s = ""
         for j, c in enumerate(row):
-            s += "X" if visited[i][j] else c
+            if isinstance(visited[i][j], bool):
+                s += "X" if visited[i][j] else c
+            else:
+                assert isinstance(
+                    visited[i][j], set
+                ), f"type = {type(visited[i][j])}, visited = {visited[i][j]}"
+                if len(visited[i][j]) == 0:
+                    s += c
+                elif len(visited[i][j]) == 1:
+                    if Direction.UP in visited[i][j] or Direction.DOWN in visited[i][j]:
+                        s += "|"
+                    elif (
+                        Direction.LEFT in visited[i][j]
+                        or Direction.RIGHT in visited[i][j]
+                    ):
+                        s += "-"
+                    else:
+                        assert (
+                            False
+                        ), f"type = {type(visited[i][j])}, visited = {visited[i][j]}"
+                elif len(visited[i][j]) == 2:
+                    if (
+                        Direction.UP in visited[i][j]
+                        and Direction.DOWN in visited[i][j]
+                    ):
+                        s += "|"
+                    elif (
+                        Direction.LEFT in visited[i][j]
+                        and Direction.RIGHT in visited[i][j]
+                    ):
+                        s += "-"
+                    else:
+                        s += "+"
+                else:
+                    s += "+"
         print(s)
+
+
+def has_loop(map, debug=False):
+    N = len(map)
+    M = len(map[0])
+    i, j = find_starting_point(map)
+    direction = get_direction(map, i, j)
+    visited = [[set() for _ in range(M)] for _ in range(N)]
+    while i is not None and j is not None:
+        if direction in visited[i][j]:
+            if debug:
+                print("Found loop in:")
+                print_visited(map, visited)
+                print("\n")
+            return True
+        visited[i][j].add(direction)
+        while True:
+            next_i, next_j = move_from(i, j, direction)
+            if (
+                next_i is not None
+                and next_j is not None
+                and map[next_i][next_j] in ["#", "O"]
+            ):
+                direction = rotate(direction)
+            else:
+                break
+        i, j = next_i, next_j
+    if debug:
+        print("No loop in:")
+        print_visited(map, visited)
+        print("\n")
+    return False
 
 
 if __name__ == "__main__":
@@ -67,7 +141,7 @@ if __name__ == "__main__":
     map = []
     with open(args.input, "r") as f:
         for line in f.readlines():
-            map.append(line.strip())
+            map.append(list(line.strip()))
     N = len(map)
     M = len(map[0])
 
@@ -91,8 +165,6 @@ if __name__ == "__main__":
     visited = [[False] * M for _ in range(N)]
     while i is not None and j is not None:
         visited[i][j] = True
-        if args.debug:
-            print_visited(map, visited)
         while True:
             next_i, next_j = move_from(i, j, direction)
             if next_i is not None and next_j is not None and map[next_i][next_j] == "#":
@@ -101,5 +173,20 @@ if __name__ == "__main__":
                 break
         i, j = next_i, next_j
 
+    if args.debug:
+        print_visited(map, visited)
+        print("\n")
     result = sum(sum(visited, []))
     print(f"Part 1: result = {result}")
+
+    # Part 2
+    count = 0
+    i00, j00 = find_starting_point(map)
+    for i01 in range(N):
+        for j01 in range(M):
+            if not (i01 == i00 and j01 == j00) and visited[i01][j01]:
+                new_map = copy.deepcopy(map)
+                new_map[i01][j01] = "O"
+                if has_loop(new_map, args.debug):
+                    count += 1
+    print(f"Part 2: count = {count}")
