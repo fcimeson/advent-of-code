@@ -47,7 +47,7 @@ if __name__ == "__main__":
         RIGHT_AND_UP = enum.auto()
         RIGHT_AND_DOWN = enum.auto()
 
-    def move_from(direction, i, j, increment=1):
+    def move_from(i, j, direction, increment=1):
         if i is None or j is None or not (0 <= i < N) or not (0 <= j < M):
             return None, None
         if direction == Direction.LEFT and j - increment >= 0:
@@ -60,19 +60,19 @@ if __name__ == "__main__":
             return i + increment, j
         if direction == Direction.LEFT_AND_UP:
             return move_from(
-                Direction.UP, *move_from(Direction.LEFT, i, j), increment=increment
+                *move_from(i, j, Direction.LEFT), Direction.UP, increment=increment
             )
         if direction == Direction.LEFT_AND_DOWN:
             return move_from(
-                Direction.DOWN, *move_from(Direction.LEFT, i, j), increment=increment
+                *move_from(i, j, Direction.LEFT), Direction.DOWN, increment=increment
             )
         if direction == Direction.RIGHT_AND_UP:
             return move_from(
-                Direction.UP, *move_from(Direction.RIGHT, i, j), increment=increment
+                *move_from(i, j, Direction.RIGHT), Direction.UP, increment=increment
             )
         if direction == Direction.RIGHT_AND_DOWN:
             return move_from(
-                Direction.DOWN, *move_from(Direction.RIGHT, i, j), increment=increment
+                *move_from(i, j, Direction.RIGHT), Direction.DOWN, increment=increment
             )
         return None, None
 
@@ -112,14 +112,14 @@ if __name__ == "__main__":
             i, j = i0, j0
             while i is not None and j is not None:
                 line += word_search[i][j]
-                i, j = move_from(direction, i, j)
+                i, j = move_from(i, j, direction)
             for match in re.finditer("XMAS", line):
                 i, j = i0, j0
                 for _ in range(match.start()):
-                    i, j = move_from(direction, i, j)
+                    i, j = move_from(i, j, direction)
                 for _ in range(4):
                     used[i][j] |= True
-                    i, j = move_from(direction, i, j)
+                    i, j = move_from(i, j, direction)
                 count += 1
 
     if args.debug:
@@ -139,28 +139,28 @@ if __name__ == "__main__":
             i, j = i0, j0
             while i is not None and j is not None:
                 line += word_search[i][j]
-                i, j = move_from(direction, i, j)
+                i, j = move_from(i, j, direction)
             for match in re.finditer("MAS", line):
                 i, j = i0, j0
                 for _ in range(match.start()):
-                    i, j = move_from(direction, i, j)
+                    i, j = move_from(i, j, direction)
                 for _ in range(3):
                     used[i][j] |= True
-                    i, j = move_from(direction, i, j)
+                    i, j = move_from(i, j, direction)
 
     count = 0
     for i in range(N):
         for j in range(M):
             if used[i][j] and word_search[i][j] == "A":
-                i01, j01 = move_from(Direction.LEFT_AND_DOWN, i, j)
-                i02, j02 = move_from(Direction.RIGHT_AND_UP, i, j)
+                i01, j01 = move_from(i, j, Direction.LEFT_AND_DOWN)
+                i02, j02 = move_from(i, j, Direction.RIGHT_AND_UP)
                 if i01 is None or i02 is None or j01 is None or j02 is None:
                     continue
                 candiate = word_search[i01][j01] + "A" + word_search[i02][j02]
                 if candiate not in ["MAS", "SAM"]:
                     continue
-                i01, j01 = move_from(Direction.RIGHT_AND_DOWN, i, j)
-                i02, j02 = move_from(Direction.LEFT_AND_UP, i, j)
+                i01, j01 = move_from(i, j, Direction.RIGHT_AND_DOWN)
+                i02, j02 = move_from(i, j, Direction.LEFT_AND_UP)
                 if i01 is None or i02 is None or j01 is None or j02 is None:
                     continue
                 candiate = word_search[i01][j01] + "A" + word_search[i02][j02]
