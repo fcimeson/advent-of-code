@@ -47,6 +47,4 @@ if __name__ == "__main__":
         edit_distance_01 += abs(list_02[i] - list_01[i])
         edit_distance_02 += list_01[i] * frequency_02[list_01[i]]
 
-    print(
-        f"List edit distance 01 = {edit_distance_01}, edit distance 02 = {edit_distance_02}."
-    )
+    print(f"List edit distance 01 = {edit_distance_01}, edit distance 02 = {edit_distance_02}.")

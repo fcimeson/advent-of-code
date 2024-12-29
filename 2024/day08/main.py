@@ -93,15 +93,11 @@ if __name__ == "__main__":
                 if location_01 != location_02:
                     delta = location_02 - location_01
                     candidate_location = location_01
-                    while (
-                        0 <= candidate_location.i < N and 0 <= candidate_location.j < M
-                    ):
+                    while 0 <= candidate_location.i < N and 0 <= candidate_location.j < M:
                         anti_nodes[candidate_location.i][candidate_location.j] = True
                         candidate_location -= delta
                     candidate_location = location_02
-                    while (
-                        0 <= candidate_location.i < N and 0 <= candidate_location.j < M
-                    ):
+                    while 0 <= candidate_location.i < N and 0 <= candidate_location.j < M:
                         anti_nodes[candidate_location.i][candidate_location.j] = True
                         candidate_location += delta
     if args.debug:

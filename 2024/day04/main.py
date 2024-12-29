@@ -59,21 +59,13 @@ if __name__ == "__main__":
         if direction == Direction.DOWN and i + increment < N:
             return i + increment, j
         if direction == Direction.LEFT_AND_UP:
-            return move_from(
-                *move_from(i, j, Direction.LEFT), Direction.UP, increment=increment
-            )
+            return move_from(*move_from(i, j, Direction.LEFT), Direction.UP, increment=increment)
         if direction == Direction.LEFT_AND_DOWN:
-            return move_from(
-                *move_from(i, j, Direction.LEFT), Direction.DOWN, increment=increment
-            )
+            return move_from(*move_from(i, j, Direction.LEFT), Direction.DOWN, increment=increment)
         if direction == Direction.RIGHT_AND_UP:
-            return move_from(
-                *move_from(i, j, Direction.RIGHT), Direction.UP, increment=increment
-            )
+            return move_from(*move_from(i, j, Direction.RIGHT), Direction.UP, increment=increment)
         if direction == Direction.RIGHT_AND_DOWN:
-            return move_from(
-                *move_from(i, j, Direction.RIGHT), Direction.DOWN, increment=increment
-            )
+            return move_from(*move_from(i, j, Direction.RIGHT), Direction.DOWN, increment=increment)
         return None, None
 
     starting_points = {}
@@ -81,18 +73,10 @@ if __name__ == "__main__":
     starting_points[Direction.RIGHT] = set([(i, 0) for i in range(N)])
     starting_points[Direction.UP] = set([(N - 1, j) for j in range(M)])
     starting_points[Direction.DOWN] = set([(0, j) for j in range(M)])
-    starting_points[Direction.LEFT_AND_UP] = (
-        starting_points[Direction.LEFT] | starting_points[Direction.UP]
-    )
-    starting_points[Direction.LEFT_AND_DOWN] = (
-        starting_points[Direction.LEFT] | starting_points[Direction.DOWN]
-    )
-    starting_points[Direction.RIGHT_AND_UP] = (
-        starting_points[Direction.RIGHT] | starting_points[Direction.UP]
-    )
-    starting_points[Direction.RIGHT_AND_DOWN] = (
-        starting_points[Direction.RIGHT] | starting_points[Direction.DOWN]
-    )
+    starting_points[Direction.LEFT_AND_UP] = starting_points[Direction.LEFT] | starting_points[Direction.UP]
+    starting_points[Direction.LEFT_AND_DOWN] = starting_points[Direction.LEFT] | starting_points[Direction.DOWN]
+    starting_points[Direction.RIGHT_AND_UP] = starting_points[Direction.RIGHT] | starting_points[Direction.UP]
+    starting_points[Direction.RIGHT_AND_DOWN] = starting_points[Direction.RIGHT] | starting_points[Direction.DOWN]
 
     # Part 1
     count = 0

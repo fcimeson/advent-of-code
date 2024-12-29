@@ -23,9 +23,7 @@ if __name__ == "__main__":
                 depth -= int(re.findall(r"\d+", line)[0])
             else:
                 assert False
-        print(
-            f"Part 1: Horizontal = {horizontal}, Depth = {depth}, Product = {horizontal*depth}"
-        )
+        print(f"Part 1: Horizontal = {horizontal}, Depth = {depth}, Product = {horizontal*depth}")
 
     # Part 2
     with open(args.input, "r") as f:
@@ -41,6 +39,4 @@ if __name__ == "__main__":
                 aim -= int(re.findall(r"\d+", line)[0])
             else:
                 assert False
-        print(
-            f"Part 2: Horizontal = {horizontal}, Depth = {depth}, Product = {horizontal*depth}"
-        )
+        print(f"Part 2: Horizontal = {horizontal}, Depth = {depth}, Product = {horizontal*depth}")

@@ -65,10 +65,7 @@ if __name__ == "__main__":
     # Part 1
     winner = False
     called_numbers = []
-    games = [
-        {"board": game_board, "row_count": [], "col_count": []}
-        for game_board in game_boards
-    ]
+    games = [{"board": game_board, "row_count": [], "col_count": []} for game_board in game_boards]
     for called_number in numbers_to_call:
         called_numbers.append(called_number)
         for i, game in enumerate(games):
@@ -85,10 +82,7 @@ if __name__ == "__main__":
     # Part 2
     winners = []
     called_numbers = []
-    games = [
-        {"board": game_board, "row_count": [], "col_count": []}
-        for game_board in game_boards
-    ]
+    games = [{"board": game_board, "row_count": [], "col_count": []} for game_board in game_boards]
     while len(games) > 0:
         called_number = numbers_to_call.pop(0)
         called_numbers.append(called_number)

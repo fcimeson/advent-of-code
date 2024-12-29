@@ -48,19 +48,12 @@ if __name__ == "__main__":
                         stack.pop()
                     else:
                         if args.debug:
-                            print(
-                                f"{line} - Expected {expected}, but found {char} instead."
-                            )
+                            print(f"{line} - Expected {expected}, but found {char} instead.")
                         illegals[char] += 1
                         break
 
     # Calculate
-    points = (
-        illegals[")"] * 3
-        + illegals["]"] * 57
-        + illegals["}"] * 1197
-        + illegals[">"] * 25137
-    )
+    points = illegals[")"] * 3 + illegals["]"] * 57 + illegals["}"] * 1197 + illegals[">"] * 25137
     print(f"Part 1: total syntax score is {points}")
 
     # Part 2
@@ -97,14 +90,10 @@ if __name__ == "__main__":
                     score = score * 5 + score_map[bracket]
                 if len(missing) > 0:
                     if args.debug:
-                        print(
-                            f"{line} - Completed by adding {missing}, score = {score}."
-                        )
+                        print(f"{line} - Completed by adding {missing}, score = {score}.")
                     scores.append(score)
                     total += score
 
     # Calculate
     scores = sorted(scores)
-    print(
-        f"Part 2: total syntax score is {total} and the middle score is {scores[len(scores)//2]}."
-    )
+    print(f"Part 2: total syntax score is {total} and the middle score is {scores[len(scores)//2]}.")

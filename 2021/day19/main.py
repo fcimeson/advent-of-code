@@ -105,9 +105,7 @@ class Scanner:
                 self.graph[index02, index01] = d
                 if d > 0:
                     self.unique_edges_by_weight.append(Edge(index01, index02, d))
-        self.unique_edges_by_weight = sorted(
-            self.unique_edges_by_weight, key=lambda edge: edge.weight
-        )
+        self.unique_edges_by_weight = sorted(self.unique_edges_by_weight, key=lambda edge: edge.weight)
         if debug:
             for edge in self.unique_edges_by_weight:
                 print(edge)
@@ -163,9 +161,7 @@ def find_subgraph_isomorphism(scanner01, scanner02, debug=False):
     index02 = 0
     edge02 = scanner02.unique_edges_by_weight[index02]
     for index01, edge01 in enumerate(scanner01.unique_edges_by_weight):
-        while edge02.weight < edge01.weight and index02 + 1 < len(
-            scanner02.unique_edges_by_weight
-        ):
+        while edge02.weight < edge01.weight and index02 + 1 < len(scanner02.unique_edges_by_weight):
             index02 += 1
             edge02 = scanner02.unique_edges_by_weight[index02]
         if edge01.weight == edge02.weight:
@@ -252,17 +248,8 @@ def orient_02_to_01(scanner01, scanner02, isomorphisim):
                 dx02, dy02, dz02 = delta(scanner02.scans[i02], scanner02.scans[j02])
 
                 # Use unique x deltas to understand which axis is actually the x-axis
-                if (
-                    not x_rotated
-                    and abs(dx01) > 0
-                    and abs(dx01) != abs(dy01)
-                    and abs(dx01) != abs(dz01)
-                ):
-                    assert (
-                        abs(dx01) == abs(dx02)
-                        or abs(dx01) == abs(dy02)
-                        or abs(dx01) == abs(dz02)
-                    )
+                if not x_rotated and abs(dx01) > 0 and abs(dx01) != abs(dy01) and abs(dx01) != abs(dz01):
+                    assert abs(dx01) == abs(dx02) or abs(dx01) == abs(dy02) or abs(dx01) == abs(dz02)
                     if abs(dx01) == abs(dx02):
                         rotation_matrix[0][0] = dx02 // dx01
                     elif abs(dx01) == abs(dy02):
@@ -272,17 +259,8 @@ def orient_02_to_01(scanner01, scanner02, isomorphisim):
                     x_rotated = True
 
                 # Use unique y deltas to understand which axis is actually the y-axis
-                if (
-                    not y_rotated
-                    and abs(dy01) > 0
-                    and abs(dy01) != abs(dx01)
-                    and abs(dy01) != abs(dz01)
-                ):
-                    assert (
-                        abs(dy01) == abs(dx02)
-                        or abs(dy01) == abs(dy02)
-                        or abs(dy01) == abs(dz02)
-                    )
+                if not y_rotated and abs(dy01) > 0 and abs(dy01) != abs(dx01) and abs(dy01) != abs(dz01):
+                    assert abs(dy01) == abs(dx02) or abs(dy01) == abs(dy02) or abs(dy01) == abs(dz02)
                     if abs(dy01) == abs(dx02):
                         rotation_matrix[1][0] = dx02 // dy01
                     elif abs(dy01) == abs(dy02):
@@ -292,17 +270,8 @@ def orient_02_to_01(scanner01, scanner02, isomorphisim):
                     y_rotated = True
 
                 # Use unique z deltas to understand which axis is actually the z-axis
-                if (
-                    not z_rotated
-                    and abs(dz01) > 0
-                    and abs(dz01) != abs(dx01)
-                    and abs(dz01) != abs(dy01)
-                ):
-                    assert (
-                        abs(dz01) == abs(dx02)
-                        or abs(dz01) == abs(dy02)
-                        or abs(dz01) == abs(dz02)
-                    )
+                if not z_rotated and abs(dz01) > 0 and abs(dz01) != abs(dx01) and abs(dz01) != abs(dy01):
+                    assert abs(dz01) == abs(dx02) or abs(dz01) == abs(dy02) or abs(dz01) == abs(dz02)
                     if abs(dz01) == abs(dx02):
                         rotation_matrix[2][0] = dx02 // dz01
                     elif abs(dz01) == abs(dy02):
@@ -353,9 +322,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Advent of Code")
     parser.add_argument("input", help="input file")
     parser.add_argument("--days", type=int, default=80, help="length of simulation")
-    parser.add_argument(
-        "--pickle", choices=["load", "save", None], default=None, help="Pickle RICK!!!"
-    )
+    parser.add_argument("--pickle", choices=["load", "save", None], default=None, help="Pickle RICK!!!")
     parser.add_argument("-d", "--debug", action="store_true", help="enable debug code")
     args = parser.parse_args()
 

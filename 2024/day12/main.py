@@ -52,11 +52,7 @@ class Coordinate:
 
     def move(self, direction, increment=1, inside_map=True):
         global N, M
-        if (
-            self.i is None
-            or self.j is None
-            or (inside_map and not (0 <= self.i < N and 0 <= self.j < M))
-        ):
+        if self.i is None or self.j is None or (inside_map and not (0 <= self.i < N and 0 <= self.j < M)):
             return None
         if direction == Direction.LEFT:
             if inside_map and self.j - increment < 0:
@@ -93,11 +89,7 @@ def get_region(start):
                 Direction.RIGHT,
             ]
         ]:
-            if (
-                next is not None
-                and next not in region
-                and next.plant() == start.plant()
-            ):
+            if next is not None and next not in region and next.plant() == start.plant():
                 queue.append(next)
     return sorted(list(region))
 
@@ -134,10 +126,7 @@ def get_number_of_sides(region):
         Direction.RIGHT,
     ]:
         for location in sorted(region):
-            if (
-                location.move(adjacent_direction, inside_map=False).plant()
-                == location.plant()
-            ):
+            if location.move(adjacent_direction, inside_map=False).plant() == location.plant():
                 continue
             if location not in fenced:
                 fenced[location] = set()
@@ -157,10 +146,7 @@ def get_number_of_sides(region):
                     next = next.move(fence_direction, inside_map=False)
                     if next.plant() != location.plant():
                         break
-                    if (
-                        next.move(adjacent_direction, inside_map=False).plant()
-                        == location.plant()
-                    ):
+                    if next.move(adjacent_direction, inside_map=False).plant() == location.plant():
                         break
                     if next not in fenced:
                         fenced[next] = set()

@@ -31,9 +31,7 @@ if __name__ == "__main__":
     enabled = True
     with open(args.input, "r") as f:
         for line in f.readlines():
-            for instruction in re.findall(
-                r"mul\(\d{1,3},\d{1,3}\)|do\(\)|don't\(\)", line
-            ):
+            for instruction in re.findall(r"mul\(\d{1,3},\d{1,3}\)|do\(\)|don't\(\)", line):
                 if instruction == "do()":
                     enabled = True
                     continue

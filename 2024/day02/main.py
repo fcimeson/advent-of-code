@@ -36,11 +36,7 @@ def is_report_safe(report, dampener=False):
                 report_01.pop(i - 1)
                 report_02.pop(i)
                 report_03.pop(i + 1)
-                return (
-                    is_report_safe(report_01)
-                    or is_report_safe(report_02)
-                    or is_report_safe(report_03)
-                )
+                return is_report_safe(report_01) or is_report_safe(report_02) or is_report_safe(report_03)
             return False
     return True
 
@@ -78,6 +74,4 @@ if __name__ == "__main__":
                 if is_report_safe(report, dampener=True):
                     number_of_safe_reports_with_dampeners += 1
 
-    print(
-        f"Part 2: Number of safe reports with dampeners = {number_of_safe_reports_with_dampeners}"
-    )
+    print(f"Part 2: Number of safe reports with dampeners = {number_of_safe_reports_with_dampeners}")

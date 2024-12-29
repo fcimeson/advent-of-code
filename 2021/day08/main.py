@@ -58,12 +58,8 @@ if __name__ == "__main__":
                 s = line.split("|")
                 data.append(
                     {
-                        "signals": CustomList(
-                            [CharSet(s) for s in re.findall(RE_DIGIT, s[0])]
-                        ),
-                        "output": CustomList(
-                            [CharSet(s) for s in re.findall(RE_DIGIT, s[1])]
-                        ),
+                        "signals": CustomList([CharSet(s) for s in re.findall(RE_DIGIT, s[0])]),
+                        "output": CustomList([CharSet(s) for s in re.findall(RE_DIGIT, s[1])]),
                     }
                 )
             else:
@@ -141,21 +137,13 @@ if __name__ == "__main__":
             if number_of_segments == 5:
 
                 # 3 is the only 5 segments digit that doesn't has perfect overlap with the 1 digit
-                if (
-                    not digit_to_signal[3]
-                    and digit_to_signal[1]
-                    and signal >= digit_to_signal[1]
-                ):
+                if not digit_to_signal[3] and digit_to_signal[1] and signal >= digit_to_signal[1]:
                     signal_to_digit[signal] = 3
                     digit_to_signal[3] = signal
                     continue
 
                 # 5 is the only 5 segment digit with the top right missing
-                if (
-                    not digit_to_signal[5]
-                    and top_right_segment
-                    and signal.isdisjoint(top_right_segment)
-                ):
+                if not digit_to_signal[5] and top_right_segment and signal.isdisjoint(top_right_segment):
                     signal_to_digit[signal] = 5
                     digit_to_signal[5] = signal
                     continue
@@ -170,21 +158,13 @@ if __name__ == "__main__":
             if number_of_segments == 6:
 
                 # 6 is the only 6 segments digit that doesn't have perfect overlap with the 1 digit
-                if (
-                    not digit_to_signal[6]
-                    and digit_to_signal[1]
-                    and not signal >= digit_to_signal[1]
-                ):
+                if not digit_to_signal[6] and digit_to_signal[1] and not signal >= digit_to_signal[1]:
                     signal_to_digit[signal] = 6
                     digit_to_signal[6] = signal
                     continue
 
                 # 9 is the only 6 segment digit without perfect overlap of the left segments
-                if (
-                    not digit_to_signal[9]
-                    and left_segments
-                    and not signal >= left_segments
-                ):
+                if not digit_to_signal[9] and left_segments and not signal >= left_segments:
                     signal_to_digit[signal] = 9
                     digit_to_signal[9] = signal
                     continue

@@ -21,9 +21,7 @@ def filter(data, index, msb=True, debug=False):
             match_char = "1"
     output = [x for x in data if x[index] == match_char]
     if debug:
-        print(
-            f"filter: index = {index}, ones = {ones_count}/{len(data)}, match = {match_char}, output = {output}"
-        )
+        print(f"filter: index = {index}, ones = {ones_count}/{len(data)}, match = {match_char}, output = {output}")
     return output
 
 

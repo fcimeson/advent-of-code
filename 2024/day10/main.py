@@ -49,12 +49,7 @@ class Coordinate:
 
     def move(self, direction, increment=1):
         global N, M
-        if (
-            self.i is None
-            or self.j is None
-            or not (0 <= self.i < N)
-            or not (0 <= self.j < M)
-        ):
+        if self.i is None or self.j is None or not (0 <= self.i < N) or not (0 <= self.j < M):
             return None
         if direction == Direction.LEFT and self.j - increment >= 0:
             return Coordinate(self.i, self.j - increment)
@@ -125,8 +120,7 @@ def get_trails(start):
         return [[start]]
     trails = []
     for next in [
-        start.move(direction)
-        for direction in [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]
+        start.move(direction) for direction in [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]
     ]:
         if next is None:
             continue

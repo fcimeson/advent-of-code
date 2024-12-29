@@ -31,9 +31,7 @@ def is_feasible_02(result, test_inputs, test_output):
         return True
     if is_feasible_02(result * test_inputs[0], test_inputs[1:], test_output):
         return True
-    if is_feasible_02(
-        concatenate(result, test_inputs[0]), test_inputs[1:], test_output
-    ):
+    if is_feasible_02(concatenate(result, test_inputs[0]), test_inputs[1:], test_output):
         return True
     return False
 

@@ -23,9 +23,7 @@ if __name__ == "__main__":
         if prev is not None and new > prev:
             total += 1
         prev = new
-    print(
-        f"Part 1: There are {total} measurements larger than the previous measurements."
-    )
+    print(f"Part 1: There are {total} measurements larger than the previous measurements.")
 
     # Part 2
     total = 0
@@ -35,6 +33,4 @@ if __name__ == "__main__":
         if prev is not None and new > prev:
             total += 1
         prev = new
-    print(
-        f"Part 2: There are {total} measurements larger than the previous measurements."
-    )
+    print(f"Part 2: There are {total} measurements larger than the previous measurements.")

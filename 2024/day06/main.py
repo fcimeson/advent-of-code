@@ -63,33 +63,20 @@ def print_visited(map, visited):
             if isinstance(visited[i][j], bool):
                 s += "X" if visited[i][j] else c
             else:
-                assert isinstance(
-                    visited[i][j], set
-                ), f"type = {type(visited[i][j])}, visited = {visited[i][j]}"
+                assert isinstance(visited[i][j], set), f"type = {type(visited[i][j])}, visited = {visited[i][j]}"
                 if len(visited[i][j]) == 0:
                     s += c
                 elif len(visited[i][j]) == 1:
                     if Direction.UP in visited[i][j] or Direction.DOWN in visited[i][j]:
                         s += "|"
-                    elif (
-                        Direction.LEFT in visited[i][j]
-                        or Direction.RIGHT in visited[i][j]
-                    ):
+                    elif Direction.LEFT in visited[i][j] or Direction.RIGHT in visited[i][j]:
                         s += "-"
                     else:
-                        assert (
-                            False
-                        ), f"type = {type(visited[i][j])}, visited = {visited[i][j]}"
+                        assert False, f"type = {type(visited[i][j])}, visited = {visited[i][j]}"
                 elif len(visited[i][j]) == 2:
-                    if (
-                        Direction.UP in visited[i][j]
-                        and Direction.DOWN in visited[i][j]
-                    ):
+                    if Direction.UP in visited[i][j] and Direction.DOWN in visited[i][j]:
                         s += "|"
-                    elif (
-                        Direction.LEFT in visited[i][j]
-                        and Direction.RIGHT in visited[i][j]
-                    ):
+                    elif Direction.LEFT in visited[i][j] and Direction.RIGHT in visited[i][j]:
                         s += "-"
                     else:
                         s += "+"
@@ -114,11 +101,7 @@ def has_loop(map, debug=False):
         visited[i][j].add(direction)
         while True:
             next_i, next_j = move_from(i, j, direction)
-            if (
-                next_i is not None
-                and next_j is not None
-                and map[next_i][next_j] in ["#", "O"]
-            ):
+            if next_i is not None and next_j is not None and map[next_i][next_j] in ["#", "O"]:
                 direction = rotate(direction)
             else:
                 break

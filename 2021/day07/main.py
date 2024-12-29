@@ -40,12 +40,8 @@ if __name__ == "__main__":
             solution["position"] = target_position
             solution["cost"] = cost
             if args.debug:
-                print(
-                    f"Found new solution at {solution['position']} of {solution['cost']} cost"
-                )
-    print(
-        f"Part 1: the optimal solution is at {solution['position']} and spends {solution['cost']} fuel"
-    )
+                print(f"Found new solution at {solution['position']} of {solution['cost']} cost")
+    print(f"Part 1: the optimal solution is at {solution['position']} and spends {solution['cost']} fuel")
 
     # Part 2
     min_pos = min(crabs)
@@ -59,9 +55,5 @@ if __name__ == "__main__":
             solution["position"] = target_position
             solution["cost"] = cost
             if args.debug:
-                print(
-                    f"Found new solution at {solution['position']} of {solution['cost']} cost"
-                )
-    print(
-        f"Part 2: the optimal solution is at {solution['position']} and spends {solution['cost']} fuel"
-    )
+                print(f"Found new solution at {solution['position']} of {solution['cost']} cost")
+    print(f"Part 2: the optimal solution is at {solution['position']} and spends {solution['cost']} fuel")

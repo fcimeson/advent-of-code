@@ -64,9 +64,7 @@ if __name__ == "__main__":
     with open(args.input, "r") as f:
         for line in f.readlines():
             if re.match(r"^\d+$", line):
-                environment00.append(
-                    CustomList([int(x) for x in re.findall(r"\d", line)])
-                )
+                environment00.append(CustomList([int(x) for x in re.findall(r"\d", line)]))
                 assert len(environment00[-1]) == N
         assert len(environment00) == N
 
